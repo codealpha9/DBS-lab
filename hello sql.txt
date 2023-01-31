@@ -1,0 +1,222 @@
+
+SQL*Plus: Release 12.1.0.2.0 Production on Tue Jan 31 08:54:48 2023
+
+Copyright (c) 1982, 2014, Oracle.  All rights reserved.
+
+Enter user-name: dbl15@cseorcl
+Enter password:
+
+Connected to:
+Oracle Database 12c Enterprise Edition Release 12.1.0.2.0 - 64bit Production
+With the Partitioning, OLAP, Advanced Analytics and Real Application Testing options
+
+SQL> create table student(
+  2  reg_no number(5),
+  3  stu_name varchar(10),
+  4  stu_age number(3),
+  5  stu_dob date,
+  6  stu_mark1 number(4,2),
+  7  stu_mark2 number(4,1));
+
+Table created.
+
+SQL> insert into student values(094,'student1',23,'12-aug-12',23.50,235.4);
+
+1 row created.
+
+SQL> select *student
+  2  select * from student
+  3  desc student
+  4  desc student;
+select *student
+        *
+ERROR at line 1:
+ORA-00923: FROM keyword not found where expected
+
+
+SQL> desc student;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ REG_NO                                             NUMBER(5)
+ STU_NAME                                           VARCHAR2(10)
+ STU_AGE                                            NUMBER(3)
+ STU_DOB                                            DATE
+ STU_MARK1                                          NUMBER(4,2)
+ STU_MARK2                                          NUMBER(4,1)
+
+SQL> select * from student;
+
+    REG_NO STU_NAME      STU_AGE STU_DOB    STU_MARK1  STU_MARK2
+---------- ---------- ---------- --------- ---------- ----------
+        94 student1           23 12-AUG-12       23.5      235.4
+
+SQL>  insert into student values(194,'student2',23,'13-aug-12',21.50,215.4);
+
+1 row created.
+
+SQL>  insert into student values(084,'student3',13,'14-aug-12',12.50,125.4);
+
+1 row created.
+
+SQL>  insert into student values(089,'student4',43,'11-aug-12',43.50,675.4);
+
+1 row created.
+
+SQL> desc table;
+ERROR:
+ORA-00931: missing identifier
+
+
+SQL> desc student;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ REG_NO                                             NUMBER(5)
+ STU_NAME                                           VARCHAR2(10)
+ STU_AGE                                            NUMBER(3)
+ STU_DOB                                            DATE
+ STU_MARK1                                          NUMBER(4,2)
+ STU_MARK2                                          NUMBER(4,1)
+
+SQL> insert into student values(
+  2  &REG_NO,&STU_NAME,&STU_AGE,&STU_DOB,&STU_MARK1,&STU_MARK2);
+Enter value for reg_no: 234
+Enter value for stu_name: jack
+Enter value for stu_age: 12
+Enter value for stu_dob: '01-jul-12'
+Enter value for stu_mark1: 23.45
+Enter value for stu_mark2: 453.4
+old   2: &REG_NO,&STU_NAME,&STU_AGE,&STU_DOB,&STU_MARK1,&STU_MARK2)
+new   2: 234,jack,12,'01-jul-12',23.45,453.4)
+234,jack,12,'01-jul-12',23.45,453.4)
+    *
+ERROR at line 2:
+ORA-00984: column not allowed here
+
+
+SQL>  insert into student values(
+  2    2  &REG_NO,&STU_NAME,&STU_AGE,&STU_DOB,&STU_MARK1,&STU_MARK2);
+Enter value for reg_no: 234
+Enter value for stu_name: 'jack'
+Enter value for stu_age: 12
+Enter value for stu_dob: '01-jul-12'
+Enter value for stu_mark1: 23.34
+Enter value for stu_mark2: 234.5
+old   2:   2  &REG_NO,&STU_NAME,&STU_AGE,&STU_DOB,&STU_MARK1,&STU_MARK2)
+new   2:   2  234,'jack',12,'01-jul-12',23.34,234.5)
+  2  234,'jack',12,'01-jul-12',23.34,234.5)
+     *
+ERROR at line 2:
+ORA-00917: missing comma
+
+
+SQL> insert into student values(
+  2
+SQL> insert into student values(
+  2    &REG_NO,&STU_NAME,&STU_AGE,&STU_DOB,&STU_MARK1,&STU_MARK2);
+Enter value for reg_no: 231
+Enter value for stu_name: 'jack'
+Enter value for stu_age: 12
+Enter value for stu_dob: '12-jul-12'
+Enter value for stu_mark1: 23.45
+Enter value for stu_mark2: 123.4
+old   2:   &REG_NO,&STU_NAME,&STU_AGE,&STU_DOB,&STU_MARK1,&STU_MARK2)
+new   2:   231,'jack',12,'12-jul-12',23.45,123.4)
+
+1 row created.
+
+SQL> select * from student;
+
+    REG_NO STU_NAME      STU_AGE STU_DOB    STU_MARK1  STU_MARK2
+---------- ---------- ---------- --------- ---------- ----------
+        94 student1           23 12-AUG-12       23.5      235.4
+       194 student2           23 13-AUG-12       21.5      215.4
+        84 student3           13 14-AUG-12       12.5      125.4
+        89 student4           43 11-AUG-12       43.5      675.4
+       231 jack               12 12-JUL-12      23.45      123.4
+
+SQL> alter table student add sem varchar(5);
+
+Table altered.
+
+SQL> desc student;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ REG_NO                                             NUMBER(5)
+ STU_NAME                                           VARCHAR2(10)
+ STU_AGE                                            NUMBER(3)
+ STU_DOB                                            DATE
+ STU_MARK1                                          NUMBER(4,2)
+ STU_MARK2                                          NUMBER(4,1)
+ SEM                                                VARCHAR2(5)
+
+SQL> alter table student drop sem;
+alter table student drop sem
+                         *
+ERROR at line 1:
+ORA-00905: missing keyword
+
+
+SQL> alter table student drop sem varchar(5);
+alter table student drop sem varchar(5)
+                         *
+ERROR at line 1:
+ORA-00905: missing keyword
+
+
+SQL> desc student'
+SP2-0565: Illegal identifier.
+SQL> desc student;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ REG_NO                                             NUMBER(5)
+ STU_NAME                                           VARCHAR2(10)
+ STU_AGE                                            NUMBER(3)
+ STU_DOB                                            DATE
+ STU_MARK1                                          NUMBER(4,2)
+ STU_MARK2                                          NUMBER(4,1)
+ SEM                                                VARCHAR2(5)
+
+SQL> update student set sem='4';
+
+5 rows updated.
+
+SQL> select * from student
+  2  ;
+
+    REG_NO STU_NAME      STU_AGE STU_DOB    STU_MARK1  STU_MARK2 SEM
+---------- ---------- ---------- --------- ---------- ---------- -----
+        94 student1           23 12-AUG-12       23.5      235.4 4
+       194 student2           23 13-AUG-12       21.5      215.4 4
+        84 student3           13 14-AUG-12       12.5      125.4 4
+        89 student4           43 11-AUG-12       43.5      675.4 4
+       231 jack               12 12-JUL-12      23.45      123.4 4
+
+SQL> update student set sem='3' where name ='student';
+update student set sem='3' where name ='student'
+                                 *
+ERROR at line 1:
+ORA-00904: "NAME": invalid identifier
+
+
+SQL> update student set sem='3' where name ='student1';
+update student set sem='3' where name ='student1'
+                                 *
+ERROR at line 1:
+ORA-00904: "NAME": invalid identifier
+
+
+SQL> update student set sem='3' where stu_name='student1';
+
+1 row updated.
+
+SQL> select * from student;
+
+    REG_NO STU_NAME      STU_AGE STU_DOB    STU_MARK1  STU_MARK2 SEM
+---------- ---------- ---------- --------- ---------- ---------- -----
+        94 student1           23 12-AUG-12       23.5      235.4 3
+       194 student2           23 13-AUG-12       21.5      215.4 4
+        84 student3           13 14-AUG-12       12.5      125.4 4
+        89 student4           43 11-AUG-12       43.5      675.4 4
+       231 jack               12 12-JUL-12      23.45      123.4 4
+
+SQL>

@@ -1,0 +1,172 @@
+
+SQL*Plus: Release 12.1.0.2.0 Production on Tue Jan 31 09:51:01 2023
+
+Copyright (c) 1982, 2014, Oracle.  All rights reserved.
+
+Enter user-name: dbl15@cseorcl
+Enter password:
+Last Successful login time: Tue Jan 31 2023 08:55:07 +05:30
+
+Connected to:
+Oracle Database 12c Enterprise Edition Release 12.1.0.2.0 - 64bit Production
+With the Partitioning, OLAP, Advanced Analytics and Real Application Testing options
+
+SQL>
+SQL> create table employee(
+  2  emp_no number,
+  3  emp_no number,;
+emp_no number,
+*
+ERROR at line 3:
+ORA-00957: duplicate column name
+
+
+SQL> create table employee(
+  2  emp_no number(3),
+  3  emp_name varchar(20),
+  4  emp_address varchar(20),
+  5  emp_serial number(2));
+
+Table created.
+
+SQL> desc employee;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ EMP_NO                                             NUMBER(3)
+ EMP_NAME                                           VARCHAR2(20)
+ EMP_ADDRESS                                        VARCHAR2(20)
+ EMP_SERIAL                                         NUMBER(2)
+
+SQL> alter table employee add emp_salary(9);
+alter table employee add emp_salary(9)
+                                   *
+ERROR at line 1:
+ORA-00902: invalid datatype
+
+
+SQL> alter table employee add emp_salary(in lks) varchar(2);
+alter table employee add emp_salary(in lks) varchar(2)
+                                   *
+ERROR at line 1:
+ORA-00902: invalid datatype
+
+
+SQL> alter table employee add emp_salary number(10);
+
+Table altered.
+
+SQL> desc employee;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ EMP_NO                                             NUMBER(3)
+ EMP_NAME                                           VARCHAR2(20)
+ EMP_ADDRESS                                        VARCHAR2(20)
+ EMP_SERIAL                                         NUMBER(2)
+ EMP_SALARY                                         NUMBER(10)
+
+SQL> insert into employee values(&emp_no,&emp_name,&emp_address,&emp_serial,&emp_salary);
+Enter value for emp_no: 12
+Enter value for emp_name: 'jack'
+Enter value for emp_address: 'MANIPAL'
+Enter value for emp_serial: 1
+Enter value for emp_salary: 20000
+old   1: insert into employee values(&emp_no,&emp_name,&emp_address,&emp_serial,&emp_salary)
+new   1: insert into employee values(12,'jack','MANIPAL',1,20000)
+
+1 row created.
+
+SQL> insert into employee values(&emp_no,&emp_name,&emp_address,&emp_serial,&emp_salary);
+Enter value for emp_no: 13
+Enter value for emp_name: 'john'
+Enter value for emp_address: 'MANIPAL'
+Enter value for emp_serial: 2
+Enter value for emp_salary: 30000
+old   1: insert into employee values(&emp_no,&emp_name,&emp_address,&emp_serial,&emp_salary)
+new   1: insert into employee values(13,'john','MANIPAL',2,30000)
+
+1 row created.
+
+SQL>  insert into employee values(&emp_no,&emp_name,&emp_address,&emp_serial,&emp_salary);
+Enter value for emp_no: 14
+Enter value for emp_name: 'jahsj'
+Enter value for emp_address: 'MANIPAL'
+Enter value for emp_serial: 3
+Enter value for emp_salary: 40000
+old   1:  insert into employee values(&emp_no,&emp_name,&emp_address,&emp_serial,&emp_salary)
+new   1:  insert into employee values(14,'jahsj','MANIPAL',3,40000)
+
+1 row created.
+
+SQL>  insert into employee values(&emp_no,&emp_name,&emp_address,&emp_serial,&emp_salary);
+Enter value for emp_no: 15
+Enter value for emp_name: 'kahsjh'
+Enter value for emp_address: 'MANIPAL'
+Enter value for emp_serial: 5
+Enter value for emp_salary: DMKMS
+old   1:  insert into employee values(&emp_no,&emp_name,&emp_address,&emp_serial,&emp_salary)
+new   1:  insert into employee values(15,'kahsjh','MANIPAL',5,DMKMS)
+ insert into employee values(15,'kahsjh','MANIPAL',5,DMKMS)
+                                                     *
+ERROR at line 1:
+ORA-00984: column not allowed here
+
+
+SQL>  insert into employee values(&emp_no,&emp_name,&emp_address,&emp_serial,&emp_salary);
+Enter value for emp_no: 15
+Enter value for emp_name: 'jbajh'
+Enter value for emp_address: 'MANIPAL'
+Enter value for emp_serial: 4
+Enter value for emp_salary: 50000
+old   1:  insert into employee values(&emp_no,&emp_name,&emp_address,&emp_serial,&emp_salary)
+new   1:  insert into employee values(15,'jbajh','MANIPAL',4,50000)
+
+1 row created.
+
+SQL>  insert into employee values(&emp_no,&emp_name,&emp_address,&emp_serial,&emp_salary);
+Enter value for emp_no: 16
+Enter value for emp_name: 'khjh'
+Enter value for emp_address: 'MANIPAL'
+Enter value for emp_serial: 5
+Enter value for emp_salary: 60000
+old   1:  insert into employee values(&emp_no,&emp_name,&emp_address,&emp_serial,&emp_salary)
+new   1:  insert into employee values(16,'khjh','MANIPAL',5,60000)
+
+1 row created.
+
+SQL> selct * employee;
+SP2-0734: unknown command beginning "selct * em..." - rest of line ignored.
+SQL> select * from emplyee;
+select * from emplyee
+              *
+ERROR at line 1:
+ORA-00942: table or view does not exist
+
+
+SQL> select * from employee ;
+
+    EMP_NO EMP_NAME             EMP_ADDRESS          EMP_SERIAL EMP_SALARY
+---------- -------------------- -------------------- ---------- ----------
+        12 jack                 MANIPAL                       1      20000
+        13 john                 MANIPAL                       2      30000
+        14 jahsj                MANIPAL                       3      40000
+        15 jbajh                MANIPAL                       4      50000
+        16 khjh                 MANIPAL                       5      60000
+
+SQL> select name from employee;
+select name from employee
+       *
+ERROR at line 1:
+ORA-00904: "NAME": invalid identifier
+
+
+SQL> select emp_name from employee;
+
+EMP_NAME
+--------------------
+jack
+john
+jahsj
+jbajh
+khjh
+
+SQL>

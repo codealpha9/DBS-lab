@@ -1,0 +1,343 @@
+
+SQL*Plus: Release 12.1.0.2.0 Production on Tue Feb 7 08:37:14 2023
+
+Copyright (c) 1982, 2014, Oracle.  All rights reserved.
+
+Enter user-name: dbl15@cseorcl
+Enter password:
+Last Successful login time: Tue Jan 31 2023 09:52:00 +05:30
+
+Connected to:
+Oracle Database 12c Enterprise Edition Release 12.1.0.2.0 - 64bit Production
+With the Partitioning, OLAP, Advanced Analytics and Real Application Testing options
+
+SQL> create table Employee(
+  2  EmpNo number(3),
+  3
+SQL> create table Employee(
+  2  EmpNo number(3) PRIMARY KEY,
+  3  EmpName varchs
+  4
+SQL> create table Employee(
+  2  EMP_NO NUMBER(3) PRIMARY KEY,
+  3  EMP_NAME VARCHAR(20) NOT NULL,
+  4  Gender CHARACTER(1) NOT NULL CHECK (GENDER = 'M' OR GENDER = 'F'),
+  5  Salary NUMERIC(8) NOT NULL,
+  6  Address VARCHAR(20) NOT NULL,
+  7  DNo NUMERIC(5));
+create table Employee(
+             *
+ERROR at line 1:
+ORA-00955: name is already used by an existing object
+
+
+SQL> create table EMPLOYEE(
+  2  EmpNo NUMERIC(5) PRIMARY KEY,
+  3  EmpName VARCHAR(20) NOT NULL,
+  4  Gender CHARACTER(1) NOT NULL CHECK (GENDER = 'M' OR GENDER = 'F'),
+  5  Salary NUMERIC(8) NOT NULL,
+  6  Address VARCHAR(20) NOT NULL,
+  7  DNo NUMERIC(5));
+create table EMPLOYEE(
+             *
+ERROR at line 1:
+ORA-00955: name is already used by an existing object
+
+
+SQL> create table employe(
+  2  EmpNo NUMERIC(5) PRIMARY KEY,
+  3  EmpName VARCHAR(20) NOT NULL,
+  4  Gender CHARACTER(1) NOT NULL CHECK (GENDER = 'M' OR GENDER = 'F'),
+  5  Salary NUMERIC(8) NOT NULL,
+  6  Address VARCHAR(20) NOT NULL,
+  7  DNo NUMERIC(5));
+
+Table created.
+
+SQL> CREATE TABLE Department(
+  2  DeptNo NUMERIC(5) PRIMARY KEY,
+  3  DeptName VARCHAR(20) UNIQUE);
+
+Table created.
+
+SQL> alter table employe add constraint FK_DNo
+  2  foreign key(DNo) references Department(DepNo);
+foreign key(DNo) references Department(DepNo)
+                                       *
+ERROR at line 2:
+ORA-00904: "DEPNO": invalid identifier
+
+
+SQL> alter table employe add constraint FK_DNo
+  2  foreign key(DNo) references Department(DeptNo);
+
+Table altered.
+
+SQL> desc table
+ERROR:
+ORA-00931: missing identifier
+
+
+SQL> dsc employe;
+SP2-0734: unknown command beginning "dsc employ..." - rest of line ignored.
+SQL> desc employe;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ EMPNO                                     NOT NULL NUMBER(5)
+ EMPNAME                                   NOT NULL VARCHAR2(20)
+ GENDER                                    NOT NULL CHAR(1)
+ SALARY                                    NOT NULL NUMBER(8)
+ ADDRESS                                   NOT NULL VARCHAR2(20)
+ DNO                                                NUMBER(5)
+
+SQL> drop table employee;
+
+Table dropped.
+
+SQL> desc employee;
+ERROR:
+ORA-04043: object employee does not exist
+
+
+SQL> desc department
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ DEPTNO                                    NOT NULL NUMBER(5)
+ DEPTNAME                                           VARCHAR2(20)
+
+SQL> insert into employe(1,'Josh','M',20000,'MANIPAL',23);
+insert into employe(1,'Josh','M',20000,'MANIPAL',23)
+                    *
+ERROR at line 1:
+ORA-00928: missing SELECT keyword
+
+
+SQL> insert into employe values(1,'Josh','M',20000,'MANIPAL',23);
+insert into employe values(1,'Josh','M',20000,'MANIPAL',23)
+*
+ERROR at line 1:
+ORA-02291: integrity constraint (DBL15.FK_DNO) violated - parent key not found
+
+
+SQL> insert into employe values(1,'Josh','M',20000,'MANIPAL',3);
+insert into employe values(1,'Josh','M',20000,'MANIPAL',3)
+*
+ERROR at line 1:
+ORA-02291: integrity constraint (DBL15.FK_DNO) violated - parent key not found
+
+
+SQL> INSERT INTO Department VALUES (1,'DEV');
+
+1 row created.
+
+SQL> INSERT INTO Department VALUES (2,'OPS');
+
+1 row created.
+
+SQL> INSERT INTO Department VALUES (3,'CustomerService');
+
+1 row created.
+
+SQL> insert into employe values(1,'Josh','M',20000,'MANIPAL',3);
+
+1 row created.
+
+SQL> insert into employe values(2,'John','M',50000,'MANIPAL',1);
+
+1 row created.
+
+SQL> insert into employe values(3,'Jack','M',10000,'MANIPAL',2);
+
+1 row created.
+
+SQL> insert into employe values(4,'Jester','M',80000,'MANIPAL',1);
+
+1 row created.
+
+SQL> delete from employe where salary=10000
+  2  ;
+
+1 row deleted.
+
+SQL> insert into employe values(3,'Jack','M',60000,'MANIPAL',2);
+
+1 row created.
+
+SQL> INSERT INTO Department VALUES (3,'HR');
+INSERT INTO Department VALUES (3,'HR')
+*
+ERROR at line 1:
+ORA-00001: unique constraint (DBL15.SYS_C00181674) violated
+
+
+SQL> INSERT INTO Employee VALUES (4,'Emp4','M',60000,'MANIPAL',4);
+INSERT INTO Employee VALUES (4,'Emp4','M',60000,'MANIPAL',4)
+            *
+ERROR at line 1:
+ORA-00942: table or view does not exist
+
+
+SQL> INSERT INTO Employe VALUES (4,'Emp4','M',60000,'MANIPAL',4);
+INSERT INTO Employe VALUES (4,'Emp4','M',60000,'MANIPAL',4)
+*
+ERROR at line 1:
+ORA-00001: unique constraint (DBL15.SYS_C00181673) violated
+
+
+SQL> INSERT INTO Employe VALUES (3,'Emp3','M',60000,'MANIPAL',2);
+INSERT INTO Employe VALUES (3,'Emp3','M',60000,'MANIPAL',2)
+*
+ERROR at line 1:
+ORA-00001: unique constraint (DBL15.SYS_C00181673) violated
+
+
+SQL> select * from employe;
+
+     EMPNO EMPNAME              G     SALARY ADDRESS                     DNO
+---------- -------------------- - ---------- -------------------- ----------
+         1 Josh                 M      20000 MANIPAL                       3
+         2 John                 M      50000 MANIPAL                       1
+         4 Jester               M      80000 MANIPAL                       1
+         3 Jack                 M      60000 MANIPAL                       2
+
+SQL> select * from department;
+
+    DEPTNO DEPTNAME
+---------- --------------------
+         1 DEV
+         2 OPS
+         3 CustomerService
+
+SQL> modify table employe
+SP2-0734: unknown command beginning "modify tab..." - rest of line ignored.
+SQL> modify table employe;
+SP2-0734: unknown command beginning "modify tab..." - rest of line ignored.
+SQL> insert into department values(5,'HR');
+
+1 row created.
+
+SQL> insert into department values(3,'HRr');
+insert into department values(3,'HRr')
+*
+ERROR at line 1:
+ORA-00001: unique constraint (DBL15.SYS_C00181674) violated
+
+
+SQL> drop from department where deptno=5;
+drop from department where deptno=5
+     *
+ERROR at line 1:
+ORA-00950: invalid DROP option
+
+
+SQL> drop from department where DEPTNO=5
+  2  ;
+drop from department where DEPTNO=5
+     *
+ERROR at line 1:
+ORA-00950: invalid DROP option
+
+
+SQL> delete from department where deptno=5;
+
+1 row deleted.
+
+SQL> insert into employe values(6,'new','G',40000,'MANIPAL',7);
+insert into employe values(6,'new','G',40000,'MANIPAL',7)
+*
+ERROR at line 1:
+ORA-02290: check constraint (DBL15.SYS_C00181672) violated
+
+
+SQL> DELETE FROM Department WHERE DeptNo IN (SELECT Dno FROM Employe GROUP BY DNo HAVING COUNT(*) > 1);
+DELETE FROM Department WHERE DeptNo IN (SELECT Dno FROM Employe GROUP BY DNo HAVING COUNT(*) > 1)
+*
+ERROR at line 1:
+ORA-02292: integrity constraint (DBL15.FK_DNO) violated - child record found
+
+
+SQL> ALTER TABLE Employe DROP CONSTRAINT FK_DNo;
+
+Table altered.
+
+SQL> ALTER TABLE Employe ADD CONSTRAINT FK_DNo FOREIGN KEY(DNo) REFERENCES Department(DeptNo) ON DELETE CAS
+CADE;
+
+Table altered.
+
+SQL> select * from employee;
+select * from employee
+              *
+ERROR at line 1:
+ORA-00942: table or view does not exist
+
+
+SQL> select * from employe;
+
+     EMPNO EMPNAME              G     SALARY ADDRESS                     DNO
+---------- -------------------- - ---------- -------------------- ----------
+         1 Josh                 M      20000 MANIPAL                       3
+         2 John                 M      50000 MANIPAL                       1
+         4 Jester               M      80000 MANIPAL                       1
+         3 Jack                 M      60000 MANIPAL                       2
+
+SQL> DELETE FROM Department WHERE DeptNo IN (SELECT Dno FROM Employe GROUP BY DNo HAVING COUNT(*) > 1);
+
+1 row deleted.
+
+SQL> select *from department;
+
+    DEPTNO DEPTNAME
+---------- --------------------
+         2 OPS
+         3 CustomerService
+
+SQL> select * from employe;
+
+     EMPNO EMPNAME              G     SALARY ADDRESS                     DNO
+---------- -------------------- - ---------- -------------------- ----------
+         1 Josh                 M      20000 MANIPAL                       3
+         3 Jack                 M      60000 MANIPAL                       2
+
+SQL> alter table employe modify salary 10000;
+alter table employe modify salary 10000
+                                  *
+ERROR at line 1:
+ORA-00902: invalid datatype
+
+
+SQL> alter table employe modify salary=10000;
+alter table employe modify salary=10000
+                                 *
+ERROR at line 1:
+ORA-00902: invalid datatype
+
+
+SQL> alter table employe modify default salary=10000;
+alter table employe modify default salary=10000
+                                         *
+ERROR at line 1:
+ORA-00902: invalid datatype
+
+
+SQL> alter table employe modify default salary 10000;
+alter table employe modify default salary 10000
+                                          *
+ERROR at line 1:
+ORA-00902: invalid datatype
+
+
+SQL> modify salary number(8) default 5000;
+SP2-0734: unknown command beginning "modify sal..." - rest of line ignored.
+SQL>  alter table EMPLOYEE modify salary default 10000;
+ alter table EMPLOYEE modify salary default 10000
+*
+ERROR at line 1:
+ORA-00942: table or view does not exist
+
+
+SQL>  alter table employe modify salary default 10000;
+
+Table altered.
+
+SQL>

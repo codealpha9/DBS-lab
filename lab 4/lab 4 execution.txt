@@ -1,0 +1,1271 @@
+
+SQL*Plus: Release 12.1.0.2.0 Production on Tue Feb 21 09:19:46 2023
+
+Copyright (c) 1982, 2014, Oracle.  All rights reserved.
+
+Enter user-name: dbl15@cseorcl
+Enter password:
+Last Successful login time: Tue Feb 21 2023 08:41:06 +05:30
+
+Connected to:
+Oracle Database 12c Enterprise Edition Release 12.1.0.2.0 - 64bit Production
+With the Partitioning, OLAP, Advanced Analytics and Real Application Testing options
+
+SQL> drop table prereq;
+
+Table dropped.
+
+SQL> drop table time_slot;
+
+Table dropped.
+
+SQL> drop table advisor;
+
+Table dropped.
+
+SQL> drop table takes;
+
+Table dropped.
+
+SQL> drop table student;
+
+Table dropped.
+
+SQL> drop table teaches;
+
+Table dropped.
+
+SQL> drop table section;
+
+Table dropped.
+
+SQL> drop table instructor;
+
+Table dropped.
+
+SQL> drop table course;
+
+Table dropped.
+
+SQL> drop table department;
+
+Table dropped.
+
+SQL> drop table classroom;
+
+Table dropped.
+
+SQL>
+SQL> create table classroom
+  2     (building               varchar(15),
+  3      room_number    varchar(7),
+  4      capacity               numeric(4,0),
+  5      primary key (building, room_number)
+  6     );
+
+Table created.
+
+SQL>
+SQL> create table department
+  2     (dept_name              varchar(20),
+  3      building               varchar(15),
+  4      budget         numeric(12,2) check (budget > 0),
+  5      primary key (dept_name)
+  6     );
+
+Table created.
+
+SQL>
+SQL> create table course
+  2     (course_id              varchar(8),
+  3      title          varchar(50),
+  4      dept_name              varchar(20),
+  5      credits                numeric(2,0) check (credits > 0),
+  6      primary key (course_id),
+  7      foreign key (dept_name) references department
+  8             on delete set null
+  9     );
+
+Table created.
+
+SQL>
+SQL> create table instructor
+  2     (ID                     varchar(5),
+  3      name                   varchar(20) not null,
+  4      dept_name              varchar(20),
+  5      salary numeric(8,2) check (salary > 29000),
+  6      primary key (ID),
+  7      foreign key (dept_name) references department
+  8             on delete set null
+  9     );
+
+Table created.
+
+SQL>
+SQL> create table section
+  2     (course_id              varchar(8),
+  3           sec_id            varchar(8),
+  4      semester               varchar(6)
+  5     check (semester in ('Fall', 'Winter', 'Spring', 'Summer')),
+  6      year   numeric(4,0) check (year > 1701 and year < 2100),
+  7      building               varchar(15),
+  8      room_number    varchar(7),
+  9      time_slot_id   varchar(4),
+ 10      primary key (course_id, sec_id, semester, year),
+ 11      foreign key (course_id) references course
+ 12             on delete cascade,
+ 13      foreign key (building, room_number) references classroom
+ 14             on delete set null
+ 15     );
+
+Table created.
+
+SQL>
+SQL> create table teaches
+  2     (ID                     varchar(5),
+  3      course_id              varchar(8),
+  4      sec_id         varchar(8),
+  5      semester               varchar(6),
+  6      year                   numeric(4,0),
+  7      primary key (ID, course_id, sec_id, semester, year),
+  8      foreign key (course_id,sec_id, semester, year) references section on delete cascade,
+  9      foreign key (ID) references instructor on delete cascade
+ 10     );
+
+Table created.
+
+SQL>
+SQL> create table student
+  2     (ID                     varchar(5),
+  3      name                   varchar(20) not null,
+  4      dept_name              varchar(20),
+  5      tot_cred               numeric(3,0) check (tot_cred >= 0),
+  6      primary key (ID),
+  7      foreign key (dept_name) references department
+  8             on delete set null
+  9     );
+
+Table created.
+
+SQL>
+SQL> create table takes
+  2     (ID                     varchar(5),
+  3      course_id              varchar(8),
+  4      sec_id         varchar(8),
+  5      semester               varchar(6),
+  6      year                   numeric(4,0),
+  7      grade          varchar(2),
+  8      primary key (ID, course_id, sec_id, semester, year),
+  9      foreign key (course_id,sec_id, semester, year) references section on delete cascade,
+ 10      foreign key (ID) references student on delete cascade
+ 11     );
+
+Table created.
+
+SQL>
+SQL> create table advisor
+  2     (s_ID                   varchar(5),
+  3      i_ID                   varchar(5),
+  4      primary key (s_ID),
+  5      foreign key (i_ID) references instructor (ID)
+  6             on delete set null,
+  7      foreign key (s_ID) references student (ID)
+  8             on delete cascade
+  9     );
+
+Table created.
+
+SQL>
+SQL> create table time_slot
+  2     (time_slot_id           varchar(4),
+  3      day                    varchar(1),
+  4      start_hr               numeric(2) check (start_hr >= 0 and start_hr < 24),
+  5      start_min              numeric(2) check (start_min >= 0 and start_min < 60),
+  6      end_hr         numeric(2) check (end_hr >= 0 and end_hr < 24),
+  7      end_min                numeric(2) check (end_min >= 0 and end_min < 60),
+  8      primary key (time_slot_id, day, start_hr, start_min)
+  9     );
+
+Table created.
+
+SQL>
+SQL> create table prereq
+  2     (course_id              varchar(8),
+  3      prereq_id              varchar(8),
+  4      primary key (course_id, prereq_id),
+  5      foreign key (course_id) references course
+  6             on delete cascade,
+  7      foreign key (prereq_id) references course
+  8     );
+
+Table created.
+
+SQL> delete from prereq;
+
+0 rows deleted.
+
+SQL> delete from time_slot;
+
+0 rows deleted.
+
+SQL> delete from advisor;
+
+0 rows deleted.
+
+SQL> delete from takes;
+
+0 rows deleted.
+
+SQL> delete from student;
+
+0 rows deleted.
+
+SQL> delete from teaches;
+
+0 rows deleted.
+
+SQL> delete from section;
+
+0 rows deleted.
+
+SQL> delete from instructor;
+
+0 rows deleted.
+
+SQL> delete from course;
+
+0 rows deleted.
+
+SQL> delete from department;
+
+0 rows deleted.
+
+SQL> delete from classroom;
+
+0 rows deleted.
+
+SQL> insert into classroom values ('Packard', '101', '500');
+
+1 row created.
+
+SQL> insert into classroom values ('Painter', '514', '10');
+
+1 row created.
+
+SQL> insert into classroom values ('Taylor', '3128', '70');
+
+1 row created.
+
+SQL> insert into classroom values ('Watson', '100', '30');
+
+1 row created.
+
+SQL> insert into classroom values ('Watson', '120', '50');
+
+1 row created.
+
+SQL> insert into department values ('Biology', 'Watson', '90000');
+
+1 row created.
+
+SQL> insert into department values ('Comp. Sci.', 'Taylor', '100000');
+
+1 row created.
+
+SQL> insert into department values ('Elec. Eng.', 'Taylor', '85000');
+
+1 row created.
+
+SQL> insert into department values ('Finance', 'Painter', '120000');
+
+1 row created.
+
+SQL> insert into department values ('History', 'Painter', '50000');
+
+1 row created.
+
+SQL> insert into department values ('Music', 'Packard', '80000');
+
+1 row created.
+
+SQL> insert into department values ('Physics', 'Watson', '70000');
+
+1 row created.
+
+SQL> insert into course values ('BIO-101', 'Intro. to Biology', 'Biology', '4');
+
+1 row created.
+
+SQL> insert into course values ('BIO-301', 'Genetics', 'Biology', '4');
+
+1 row created.
+
+SQL> insert into course values ('BIO-399', 'Computational Biology', 'Biology', '3');
+
+1 row created.
+
+SQL> insert into course values ('CS-101', 'Intro. to Computer Science', 'Comp. Sci.', '4');
+
+1 row created.
+
+SQL> insert into course values ('CS-190', 'Game Design', 'Comp. Sci.', '4');
+
+1 row created.
+
+SQL> insert into course values ('CS-315', 'Robotics', 'Comp. Sci.', '3');
+
+1 row created.
+
+SQL> insert into course values ('CS-319', 'Image Processing', 'Comp. Sci.', '3');
+
+1 row created.
+
+SQL> insert into course values ('CS-347', 'Database System Concepts', 'Comp. Sci.', '3');
+
+1 row created.
+
+SQL> insert into course values ('EE-181', 'Intro. to Digital Systems', 'Elec. Eng.', '3');
+
+1 row created.
+
+SQL> insert into course values ('FIN-201', 'Investment Banking', 'Finance', '3');
+
+1 row created.
+
+SQL> insert into course values ('HIS-351', 'World History', 'History', '3');
+
+1 row created.
+
+SQL> insert into course values ('MU-199', 'Music Video Production', 'Music', '3');
+
+1 row created.
+
+SQL> insert into course values ('PHY-101', 'Physical Principles', 'Physics', '4');
+
+1 row created.
+
+SQL> insert into instructor values ('10101', 'Srinivasan', 'Comp. Sci.', '65000');
+
+1 row created.
+
+SQL> insert into instructor values ('12121', 'Wu', 'Finance', '90000');
+
+1 row created.
+
+SQL> insert into instructor values ('15151', 'Mozart', 'Music', '40000');
+
+1 row created.
+
+SQL> insert into instructor values ('22222', 'Einstein', 'Physics', '95000');
+
+1 row created.
+
+SQL> insert into instructor values ('32343', 'El Said', 'History', '60000');
+
+1 row created.
+
+SQL> insert into instructor values ('33456', 'Gold', 'Physics', '87000');
+
+1 row created.
+
+SQL> insert into instructor values ('45565', 'Katz', 'Comp. Sci.', '75000');
+
+1 row created.
+
+SQL> insert into instructor values ('58583', 'Califieri', 'History', '62000');
+
+1 row created.
+
+SQL> insert into instructor values ('76543', 'Singh', 'Finance', '80000');
+
+1 row created.
+
+SQL> insert into instructor values ('76766', 'Crick', 'Biology', '72000');
+
+1 row created.
+
+SQL> insert into instructor values ('83821', 'Brandt', 'Comp. Sci.', '92000');
+
+1 row created.
+
+SQL> insert into instructor values ('98345', 'Kim', 'Elec. Eng.', '80000');
+
+1 row created.
+
+SQL> insert into section values ('BIO-101', '1', 'Summer', '2009', 'Painter', '514', 'B');
+
+1 row created.
+
+SQL> insert into section values ('BIO-301', '1', 'Summer', '2010', 'Painter', '514', 'A');
+
+1 row created.
+
+SQL> insert into section values ('CS-101', '1', 'Fall', '2009', 'Packard', '101', 'H');
+
+1 row created.
+
+SQL> insert into section values ('CS-101', '1', 'Spring', '2010', 'Packard', '101', 'F');
+
+1 row created.
+
+SQL> insert into section values ('CS-190', '1', 'Spring', '2009', 'Taylor', '3128', 'E');
+
+1 row created.
+
+SQL> insert into section values ('CS-190', '2', 'Spring', '2009', 'Taylor', '3128', 'A');
+
+1 row created.
+
+SQL> insert into section values ('CS-315', '1', 'Spring', '2010', 'Watson', '120', 'D');
+
+1 row created.
+
+SQL> insert into section values ('CS-319', '1', 'Spring', '2010', 'Watson', '100', 'B');
+
+1 row created.
+
+SQL> insert into section values ('CS-319', '2', 'Spring', '2010', 'Taylor', '3128', 'C');
+
+1 row created.
+
+SQL> insert into section values ('CS-347', '1', 'Fall', '2009', 'Taylor', '3128', 'A');
+
+1 row created.
+
+SQL> insert into section values ('EE-181', '1', 'Spring', '2009', 'Taylor', '3128', 'C');
+
+1 row created.
+
+SQL> insert into section values ('FIN-201', '1', 'Spring', '2010', 'Packard', '101', 'B');
+
+1 row created.
+
+SQL> insert into section values ('HIS-351', '1', 'Spring', '2010', 'Painter', '514', 'C');
+
+1 row created.
+
+SQL> insert into section values ('MU-199', '1', 'Spring', '2010', 'Packard', '101', 'D');
+
+1 row created.
+
+SQL> insert into section values ('PHY-101', '1', 'Fall', '2009', 'Watson', '100', 'A');
+
+1 row created.
+
+SQL> insert into teaches values ('10101', 'CS-101', '1', 'Fall', '2009');
+
+1 row created.
+
+SQL> insert into teaches values ('10101', 'CS-315', '1', 'Spring', '2010');
+
+1 row created.
+
+SQL> insert into teaches values ('10101', 'CS-347', '1', 'Fall', '2009');
+
+1 row created.
+
+SQL> insert into teaches values ('12121', 'FIN-201', '1', 'Spring', '2010');
+
+1 row created.
+
+SQL> insert into teaches values ('15151', 'MU-199', '1', 'Spring', '2010');
+
+1 row created.
+
+SQL> insert into teaches values ('22222', 'PHY-101', '1', 'Fall', '2009');
+
+1 row created.
+
+SQL> insert into teaches values ('32343', 'HIS-351', '1', 'Spring', '2010');
+
+1 row created.
+
+SQL> insert into teaches values ('45565', 'CS-101', '1', 'Spring', '2010');
+
+1 row created.
+
+SQL> insert into teaches values ('45565', 'CS-319', '1', 'Spring', '2010');
+
+1 row created.
+
+SQL> insert into teaches values ('76766', 'BIO-101', '1', 'Summer', '2009');
+
+1 row created.
+
+SQL> insert into teaches values ('76766', 'BIO-301', '1', 'Summer', '2010');
+
+1 row created.
+
+SQL> insert into teaches values ('83821', 'CS-190', '1', 'Spring', '2009');
+
+1 row created.
+
+SQL> insert into teaches values ('83821', 'CS-190', '2', 'Spring', '2009');
+
+1 row created.
+
+SQL> insert into teaches values ('83821', 'CS-319', '2', 'Spring', '2010');
+
+1 row created.
+
+SQL> insert into teaches values ('98345', 'EE-181', '1', 'Spring', '2009');
+
+1 row created.
+
+SQL> insert into student values ('00128', 'Zhang', 'Comp. Sci.', '102');
+
+1 row created.
+
+SQL> insert into student values ('12345', 'Shankar', 'Comp. Sci.', '32');
+
+1 row created.
+
+SQL> insert into student values ('19991', 'Brandt', 'History', '80');
+
+1 row created.
+
+SQL> insert into student values ('23121', 'Chavez', 'Finance', '110');
+
+1 row created.
+
+SQL> insert into student values ('44553', 'Peltier', 'Physics', '56');
+
+1 row created.
+
+SQL> insert into student values ('45678', 'Levy', 'Physics', '46');
+
+1 row created.
+
+SQL> insert into student values ('54321', 'Williams', 'Comp. Sci.', '54');
+
+1 row created.
+
+SQL> insert into student values ('55739', 'Sanchez', 'Music', '38');
+
+1 row created.
+
+SQL> insert into student values ('70557', 'Snow', 'Physics', '0');
+
+1 row created.
+
+SQL> insert into student values ('76543', 'Brown', 'Comp. Sci.', '58');
+
+1 row created.
+
+SQL> insert into student values ('76653', 'Aoi', 'Elec. Eng.', '60');
+
+1 row created.
+
+SQL> insert into student values ('98765', 'Bourikas', 'Elec. Eng.', '98');
+
+1 row created.
+
+SQL> insert into student values ('98988', 'Tanaka', 'Biology', '120');
+
+1 row created.
+
+SQL> insert into takes values ('00128', 'CS-101', '1', 'Fall', '2009', 'A');
+
+1 row created.
+
+SQL> insert into takes values ('00128', 'CS-347', '1', 'Fall', '2009', 'A-');
+
+1 row created.
+
+SQL> insert into takes values ('12345', 'CS-101', '1', 'Fall', '2009', 'C');
+
+1 row created.
+
+SQL> insert into takes values ('12345', 'CS-190', '2', 'Spring', '2009', 'A');
+
+1 row created.
+
+SQL> insert into takes values ('12345', 'CS-315', '1', 'Spring', '2010', 'A');
+
+1 row created.
+
+SQL> insert into takes values ('12345', 'CS-347', '1', 'Fall', '2009', 'A');
+
+1 row created.
+
+SQL> insert into takes values ('19991', 'HIS-351', '1', 'Spring', '2010', 'B');
+
+1 row created.
+
+SQL> insert into takes values ('23121', 'FIN-201', '1', 'Spring', '2010', 'C+');
+
+1 row created.
+
+SQL> insert into takes values ('44553', 'PHY-101', '1', 'Fall', '2009', 'B-');
+
+1 row created.
+
+SQL> insert into takes values ('45678', 'CS-101', '1', 'Fall', '2009', 'F');
+
+1 row created.
+
+SQL> insert into takes values ('45678', 'CS-101', '1', 'Spring', '2010', 'B+');
+
+1 row created.
+
+SQL> insert into takes values ('45678', 'CS-319', '1', 'Spring', '2010', 'B');
+
+1 row created.
+
+SQL> insert into takes values ('54321', 'CS-101', '1', 'Fall', '2009', 'A-');
+
+1 row created.
+
+SQL> insert into takes values ('54321', 'CS-190', '2', 'Spring', '2009', 'B+');
+
+1 row created.
+
+SQL> insert into takes values ('55739', 'MU-199', '1', 'Spring', '2010', 'A-');
+
+1 row created.
+
+SQL> insert into takes values ('76543', 'CS-101', '1', 'Fall', '2009', 'A');
+
+1 row created.
+
+SQL> insert into takes values ('76543', 'CS-319', '2', 'Spring', '2010', 'A');
+
+1 row created.
+
+SQL> insert into takes values ('76653', 'EE-181', '1', 'Spring', '2009', 'C');
+
+1 row created.
+
+SQL> insert into takes values ('98765', 'CS-101', '1', 'Fall', '2009', 'C-');
+
+1 row created.
+
+SQL> insert into takes values ('98765', 'CS-315', '1', 'Spring', '2010', 'B');
+
+1 row created.
+
+SQL> insert into takes values ('98988', 'BIO-101', '1', 'Summer', '2009', 'A');
+
+1 row created.
+
+SQL> insert into takes values ('98988', 'BIO-301', '1', 'Summer', '2010', null);
+
+1 row created.
+
+SQL> insert into advisor values ('00128', '45565');
+
+1 row created.
+
+SQL> insert into advisor values ('12345', '10101');
+
+1 row created.
+
+SQL> insert into advisor values ('23121', '76543');
+
+1 row created.
+
+SQL> insert into advisor values ('44553', '22222');
+
+1 row created.
+
+SQL> insert into advisor values ('45678', '22222');
+
+1 row created.
+
+SQL> insert into advisor values ('76543', '45565');
+
+1 row created.
+
+SQL> insert into advisor values ('76653', '98345');
+
+1 row created.
+
+SQL> insert into advisor values ('98765', '98345');
+
+1 row created.
+
+SQL> insert into advisor values ('98988', '76766');
+
+1 row created.
+
+SQL> insert into time_slot values ('A', 'M', '8', '0', '8', '50');
+
+1 row created.
+
+SQL> insert into time_slot values ('A', 'W', '8', '0', '8', '50');
+
+1 row created.
+
+SQL> insert into time_slot values ('A', 'F', '8', '0', '8', '50');
+
+1 row created.
+
+SQL> insert into time_slot values ('B', 'M', '9', '0', '9', '50');
+
+1 row created.
+
+SQL> insert into time_slot values ('B', 'W', '9', '0', '9', '50');
+
+1 row created.
+
+SQL> insert into time_slot values ('B', 'F', '9', '0', '9', '50');
+
+1 row created.
+
+SQL> insert into time_slot values ('C', 'M', '11', '0', '11', '50');
+
+1 row created.
+
+SQL> insert into time_slot values ('C', 'W', '11', '0', '11', '50');
+
+1 row created.
+
+SQL> insert into time_slot values ('C', 'F', '11', '0', '11', '50');
+
+1 row created.
+
+SQL> insert into time_slot values ('D', 'M', '13', '0', '13', '50');
+
+1 row created.
+
+SQL> insert into time_slot values ('D', 'W', '13', '0', '13', '50');
+
+1 row created.
+
+SQL> insert into time_slot values ('D', 'F', '13', '0', '13', '50');
+
+1 row created.
+
+SQL> insert into time_slot values ('E', 'T', '10', '30', '11', '45 ');
+
+1 row created.
+
+SQL> insert into time_slot values ('E', 'R', '10', '30', '11', '45 ');
+
+1 row created.
+
+SQL> insert into time_slot values ('F', 'T', '14', '30', '15', '45 ');
+
+1 row created.
+
+SQL> insert into time_slot values ('F', 'R', '14', '30', '15', '45 ');
+
+1 row created.
+
+SQL> insert into time_slot values ('G', 'M', '16', '0', '16', '50');
+
+1 row created.
+
+SQL> insert into time_slot values ('G', 'W', '16', '0', '16', '50');
+
+1 row created.
+
+SQL> insert into time_slot values ('G', 'F', '16', '0', '16', '50');
+
+1 row created.
+
+SQL> insert into time_slot values ('H', 'W', '10', '0', '12', '30');
+
+1 row created.
+
+SQL> insert into prereq values ('BIO-301', 'BIO-101');
+
+1 row created.
+
+SQL> insert into prereq values ('BIO-399', 'BIO-101');
+
+1 row created.
+
+SQL> insert into prereq values ('CS-190', 'CS-101');
+
+1 row created.
+
+SQL> insert into prereq values ('CS-315', 'CS-101');
+
+1 row created.
+
+SQL> insert into prereq values ('CS-319', 'CS-101');
+
+1 row created.
+
+SQL> insert into prereq values ('CS-347', 'CS-101');
+
+1 row created.
+
+SQL> insert into prereq values ('EE-181', 'PHY-101');
+
+1 row created.
+
+SQL> select count(ID),dept_name
+  2  from student
+  3  group by dept_name;
+
+ COUNT(ID) DEPT_NAME
+---------- --------------------
+         2 Elec. Eng.
+         3 Physics
+         4 Comp. Sci.
+         1 Finance
+         1 Biology
+         1 History
+         1 Music
+
+7 rows selected.
+
+SQL> select dept_name
+  2  from student
+  3  group by dept_name
+  4  having count(ID)>10;
+
+no rows selected
+
+SQL> Select dept_name,count(distinct course_id)
+  2  from course
+  3  group by dept_name;
+
+DEPT_NAME            COUNT(DISTINCTCOURSE_ID)
+-------------------- ------------------------
+Elec. Eng.                                  1
+Physics                                     1
+Comp. Sci.                                  5
+Finance                                     1
+Biology                                     3
+History                                     1
+Music                                       1
+
+7 rows selected.
+
+SQL> Select dept_name,avg(salary)
+  2  from instructor
+  3  group by dept_name
+  4  having avg(salary) > 42000;
+
+DEPT_NAME            AVG(SALARY)
+-------------------- -----------
+Elec. Eng.                 80000
+Physics                    91000
+Comp. Sci.            77333.3333
+Finance                    85000
+Biology                    72000
+History                    61000
+
+6 rows selected.
+
+SQL>
+SQL> Select sec_id,count(distinct ID)
+  2  from (takes natural join section)
+  3  where semester='Spring' and year=2009
+  4  group by sec_id;
+
+SEC_ID   COUNT(DISTINCTID)
+-------- -----------------
+1                        1
+2                        2
+
+SQL> Select course_id,prereq_id from prereq order by course_id;
+
+COURSE_I PREREQ_I
+-------- --------
+BIO-301  BIO-101
+BIO-399  BIO-101
+CS-190   CS-101
+CS-315   CS-101
+CS-319   CS-101
+CS-347   CS-101
+EE-181   PHY-101
+
+7 rows selected.
+
+SQL> Select name,salary from instructor order by salary desc ;
+
+NAME                     SALARY
+-------------------- ----------
+Einstein                  95000
+Brandt                    92000
+Wu                        90000
+Gold                      87000
+Kim                       80000
+Singh                     80000
+Katz                      75000
+Crick                     72000
+Srinivasan                65000
+Califieri                 62000
+El Said                   60000
+
+NAME                     SALARY
+-------------------- ----------
+Mozart                    40000
+
+12 rows selected.
+
+SQL> Select max(total_salary) from (Select sum(salary) as total_salary from instructor group by dept_name);
+
+MAX(TOTAL_SALARY)
+-----------------
+           232000
+
+SQL>  Select dept_name,avg(salary) from (Select dept_name, avg(salary) as avg_salary from instructor group by dept_name) where avg_salary>42000;
+ Select dept_name,avg(salary) from (Select dept_name, avg(salary) as avg_salary from instructor group by dept_name) where avg_salary>42000
+                      *
+ERROR at line 1:
+ORA-00904: "SALARY": invalid identifier
+
+
+SQL> Select dept_name,avg(salary)
+  2  from (Select dept_name, avg(salary) as avg_salary
+  3  from instructor
+  4  group by dept_name)
+  5  where avg_salary>42000;
+Select dept_name,avg(salary)
+                     *
+ERROR at line 1:
+ORA-00904: "SALARY": invalid identifier
+
+
+SQL> WITH avgdep(avg_name, avg_sal) as (SELECT dept_name, AVG(salary) FROM instructor GROUP BY dept_name HAVING AVG(salary) > 42000)
+  2  SELECT AVG(salary) FROM instructor, avgdep WHERE instructor.dept_name = avgdep.avg_name;
+
+AVG(SALARY)
+-----------
+      78000
+
+SQL> Select max(total_student) from (Select count(distinct ID) as total_student from takes group by sec_id, semester, year having semester='Spring' and year=2010);
+
+MAX(TOTAL_STUDENT)
+------------------
+                 6
+
+SQL> Select distinct t.Name from Instructor t, teaches s, takes m, student n where t.id=s.id and s.course_id=m.course_id and m.id = n.id and n.dept_name = 'Comp. Sci';
+
+no rows selected
+
+SQL> Select dept_name, avg(inst_salary) From instructor group by dept_name having avg(inst_salary)>50000 and count(id)>5;
+Select dept_name, avg(inst_salary) From instructor group by dept_name having avg(inst_salary)>50000 and count(id)>5
+                                                                                 *
+ERROR at line 1:
+ORA-00904: "INST_SALARY": invalid identifier
+
+
+SQL> Select dept_name, avg(inst_salary) From instructor group by dept_name having avg(inst_salary)>50000 and count(id)>5;
+Select dept_name, avg(inst_salary) From instructor group by dept_name having avg(inst_salary)>50000 and count(id)>5
+                                                                                 *
+ERROR at line 1:
+ORA-00904: "INST_SALARY": invalid identifier
+
+
+SQL>  With max_budget(value) as (Select max(budget) from department) Select budget from department, max_budget where department.budget=max_budget.value;
+
+    BUDGET
+----------
+    120000
+
+SQL> With dept_total(dept_name,value) as (Select dept_name,sum(salary) from instructor group by dept_name),dept_total_average(value) as (Select avg(value) from dept_total) Select dept_name from dept_total, dept_total_average >= dept_total_avg.value;
+With dept_total(dept_name,value) as (Select dept_name,sum(salary) from instructor group by dept_name),dept_total_average(value) as (Select avg(value) from dept_total) Select dept_name from dept_total, dept_total_average >= dept_total_avg.value
+
+                                                                                                    *
+ERROR at line 1:
+ORA-00933: SQL command not properly ended
+
+
+SQL> With max_enroll(value) as(Select max(count(id)) From takes group by sec_id, year, semester having year=2009 and semester ='Fall') enrollment(sec_id, value) as (select sec_id, count(id) from takes group by sec_id, year, semester having year=2009 and semester='Fall') Select sec_id from enrollment.value;
+With max_enroll(value) as(Select max(count(id)) From takes group by sec_id, year, semester having year=2009 and semester ='Fall') enrollment(sec_id, value) as (select sec_id, count(id) from takes group by sec_id, year, semester having year=2009 and semester='Fall') Select sec_id from enrollment.value
+
+          *
+ERROR at line 1:
+ORA-00928: missing SELECT keyword
+
+
+SQL>
+SQL>
+SQL> 16.)
+SP2-0042: unknown command "16.)" - rest of line ignored.
+SQL>
+SQL> 17.) Delete from instructor where dept_name = 'Finance';
+SP2-0734: unknown command beginning "17.) Delet..." - rest of line ignored.
+SQL>
+SQL> 18.) Delete from course where dept_name='Comp. Sci.';
+SP2-0734: unknown command beginning "18.) Delet..." - rest of line ignored.
+SQL>
+SQL> 19.)
+SP2-0042: unknown command "19.)" - rest of line ignored.
+SP2-0044: For a list of known commands enter HELP
+and to leave enter EXIT.
+SQL>
+SQL> Update student
+  2  set dept_name ='IT';
+Update student
+*
+ERROR at line 1:
+ORA-02291: integrity constraint (DBL15.SYS_C00187463) violated - parent key not
+found
+
+
+SQL> Where dept_name = 'Comp. Sci';
+SP2-0734: unknown command beginning "Where dept..." - rest of line ignored.
+SQL>
+SQL> 20.)
+SP2-0042: unknown command "20.)" - rest of line ignored.
+SQL>
+SQL> Update instructor
+  2  set salary=case
+  3  when salary<=100000 then salary*1.05
+  4  else salary*1.03
+  5  end
+  6
+SQL> (OR)
+  2
+SQL> Update instructor set salary=salary*1.03 where salary>100000;
+
+0 rows updated.
+
+SQL> Update instructor set salary=salary*1.03 where salary<=100000;
+
+12 rows updated.
+
+SQL>
+SQL> 21.)
+SP2-0042: unknown command "21.)" - rest of line ignored.
+SQL>
+SQL> Insert into student
+  2  Select ID,name,dept_name,0 from instructor;
+Insert into student
+*
+ERROR at line 1:
+ORA-00001: unique constraint (DBL15.SYS_C00187462) violated
+
+
+SQL>
+SQL> 22.) Delete from instructor where salary < (Select avg(salary) from instructor);
+SP2-0734: unknown command beginning "22.) Delet..." - rest of line ignored.
+SQL>
+SQL> With max_enroll(value) as(Select max(count(id)) From takes group by sec_id, year, semester having year=2009 and semester ='Fall') enrollment(sec_id, value) as (select sec_id, count(id) from takes group by sec_id, year, semester having year=2009 and semester='Fall') Select sec_id from enrollment.value;
+With max_enroll(value) as(Select max(count(id)) From takes group by sec_id, year, semester having year=2009 and semester ='Fall') enrollment(sec_id, value) as (select sec_id, count(id) from takes group by sec_id, year, semester having year=2009 and semester='Fall') Select sec_id from enrollment.value
+
+          *
+ERROR at line 1:
+ORA-00928: missing SELECT keyword
+
+
+SQL>
+SQL>
+SQL> 16.)
+SP2-0042: unknown command "16.)" - rest of line ignored.
+SQL>
+SQL> 17.) Delete from instructor where dept_name = 'Finance';
+SP2-0734: unknown command beginning "17.) Delet..." - rest of line ignored.
+SQL>
+SQL> 18.) Delete from course where dept_name='Comp. Sci.';
+SP2-0734: unknown command beginning "18.) Delet..." - rest of line ignored.
+SQL>
+SQL> 19.)
+SP2-0042: unknown command "19.)" - rest of line ignored.
+SP2-0044: For a list of known commands enter HELP
+and to leave enter EXIT.
+SQL>
+SQL> Update student
+  2  set dept_name ='IT';
+Update student
+*
+ERROR at line 1:
+ORA-02291: integrity constraint (DBL15.SYS_C00187463) violated - parent key not
+found
+
+
+SQL> Where dept_name = 'Comp. Sci';
+SP2-0734: unknown command beginning "Where dept..." - rest of line ignored.
+SQL>
+SQL> 20.)
+SP2-0042: unknown command "20.)" - rest of line ignored.
+SQL>
+SQL> Update instructor
+  2  set salary=case
+  3  when salary<=100000 then salary*1.05
+  4  else salary*1.03
+  5  end
+  6
+SQL> (OR)
+  2
+SQL> Update instructor set salary=salary*1.03 where salary>100000;
+
+0 rows updated.
+
+SQL> Update instructor set salary=salary*1.03 where salary<=100000;
+
+12 rows updated.
+
+SQL>
+SQL> 21.)
+SP2-0042: unknown command "21.)" - rest of line ignored.
+SQL>
+SQL> Insert into student
+  2  Select ID,name,dept_name,0 from instructor;
+Insert into student
+*
+ERROR at line 1:
+ORA-00001: unique constraint (DBL15.SYS_C00187462) violated
+
+
+SQL>
+SQL> 22.) Delete from instructor where salary < (Select avg(salary) from instructor);
+SP2-0734: unknown command beginning "22.) Delet..." - rest of line ignored.
+SQL> With max_enroll(value) as(Select max(count(id)) From takes group by sec_id, year, semester having year=2009 and semester ='Fall') enrollment(sec_id, value) as (select sec_id, count(id) from takes group by sec_id, year, semester having year=2009 and semester='Fall') Select sec_id from enrollment.value;
+With max_enroll(value) as(Select max(count(id)) From takes group by sec_id, year, semester having year=2009 and semester ='Fall') enrollment(sec_id, value) as (select sec_id, count(id) from takes group by sec_id, year, semester having year=2009 and semester='Fall') Select sec_id from enrollment.value
+
+          *
+ERROR at line 1:
+ORA-00928: missing SELECT keyword
+
+
+SQL> SELECT salary WHERE salary > (SELECT AVG(salary) FROM *)
+  2  ;
+SELECT salary WHERE salary > (SELECT AVG(salary) FROM *)
+              *
+ERROR at line 1:
+ORA-00923: FROM keyword not found where expected
+
+
+SQL> WITH temp AS (SELECT avg(sum(salary)) AS T FROM instructor group by dept_name) SELECT distinct dept_name FROM instructor,temp group by dept_name,T having sum(salary)>T;
+
+DEPT_NAME
+--------------------
+Physics
+Comp. Sci.
+Finance
+
+SQL> WITH temp AS (SELECT max(budget) AS temp FROM department) SELECT * FROM department,temp WHERE temp = department.budget;
+
+DEPT_NAME            BUILDING            BUDGET       TEMP
+-------------------- --------------- ---------- ----------
+Finance              Painter             120000     120000
+
+SQL> WITH temp AS (SELECT max(count(id)) AS T FROM takes WHERE semester='Fall' and year=2009 group by sec_id) SELECT sec_id FROM temp,takes WHERE semester='Fall' and year=2009 group by sec_id,temp.T having count(id) = temp.T;
+
+SEC_ID
+--------
+1
+
+SQL> Select the names of those departments where the total credits earned by all the students is greater than the total credits earned by all the students in the Finance Department
+  2  WITH temp AS (SELECT sum(tot_cred) AS T FROM student WHERE dept_name='Finance') SELECT dept_name FROM student,temp group by dept_name,temp.T having sum(tot_cred) > temp.T;
+Select the names of those departments where the total credits earned by all the students is greater than the total credits earned by all the students in the Finance Department
+                 *
+ERROR at line 1:
+ORA-00923: FROM keyword not found where expected
+
+
+SQL> WITH temp AS (SELECT sum(tot_cred) AS T FROM student WHERE dept_name='Finance') SELECT dept_name FROM student,temp group by dept_name,temp.T having sum(tot_cred) > temp.T;
+
+DEPT_NAME
+--------------------
+Comp. Sci.
+Elec. Eng.
+Biology
+
+SQL> 16 done
+SQL>
+SQL> Select course_id from all_courses;
+
+COURSE_I
+--------
+PHY-101
+
+SQL>  CREATE VIEW all_courses as SELECT section.course_id, building, room_number FROM section, course WHERE semester = 'Fall' AND year = 2009 AND section.course_id = course.course_id AND dept_name = 'Physics';
+ CREATE VIEW all_courses as SELECT section.course_id, building, room_number FROM section, course WHERE semester = 'Fall' AND year = 2009 AND section.course_id = course.course_id AND dept_name = 'Physics'
+             *
+ERROR at line 1:
+ORA-00955: name is already used by an existing object
+
+
+SQL>  CREATE VIEW all_courses as SELECT section.course_id, building, room_number FROM section, course WHERE semester = 'Fall' AND year = 2009 AND section.course_id = course.course_id AND dept_name = 'Physics';
+ CREATE VIEW all_courses as SELECT section.course_id, building, room_number FROM section, course WHERE semester = 'Fall' AND year = 2009 AND section.course_id = course.course_id AND dept_name = 'Physics'
+             *
+ERROR at line 1:
+ORA-00955: name is already used by an existing object
+
+
+SQL> Select course_id from all_courses;
+
+COURSE_I
+--------
+PHY-101
+
+SQL> CREATE VIEW department_total_salary as SELECT dept_name, SUM(salary) sum_sal FROM instructor GROUP BY dept_name;
+CREATE VIEW department_total_salary as SELECT dept_name, SUM(salary) sum_sal FROM instructor GROUP BY dept_name
+            *
+ERROR at line 1:
+ORA-00955: name is already used by an existing object
+
+
+SQL> Select distinct t.Name from Instructor t, teaches s, takes m, student n where t.id=s.id and s.course_id=m.course_id and m.id = n.id and n.dept_name = 'Comp. Sci';
+
+no rows selected
+
+SQL>
+SQL> WITH temp AS (SELECT avg(sum(salary)) AS T FROM instructor group by dept_name) SELECT distinct dept_name FROM instructor,temp group by dept_name,T having sum(salary)>T;
+
+DEPT_NAME
+--------------------
+Physics
+Comp. Sci.
+Finance
+
+SQL> SELECT dept_name, AVG(salary) FROM instructor GROUP BY dept_name HAVING AVG(salary)>50000 AND COUNT(ID)>=5;
+
+no rows selected
+
+SQL> SELECT dept_name, AVG(salary) FROM instructor GROUP BY dept_name HAVING AVG(salary)>50000 AND COUNT(ID)>=2;
+
+DEPT_NAME            AVG(SALARY)
+-------------------- -----------
+Physics                  96541.9
+Comp. Sci.            82042.9333
+Finance                  90176.5
+History                  64714.9
+
+SQL> SELECT AVG(salary) FROM instructor, avgdep WHERE instructor.dept_name = avgdep.avg_name;
+SELECT AVG(salary) FROM instructor, avgdep WHERE instructor.dept_name = avgdep.avg_name
+                                    *
+ERROR at line 1:
+ORA-00942: table or view does not exist
+
+
+SQL> WITH avgdep(avg_name, avg_sal) as (SELECT dept_name, AVG(salary) FROM instructor GROUP BY dept_name HAVING AVG(salary) > 42000)
+  2  ;
+
+*
+ERROR at line 2:
+ORA-00928: missing SELECT keyword
+
+
+SQL> WITH avgdep(avg_name, avg_sal) as (SELECT dept_name, AVG(salary) FROM instructor GROUP BY dept_name HAVING AVG(salary) > 42000)
+  2  SELECT AVG(salary) FROM instructor, avgdep WHERE instructor.dept_name = avgdep.avg_name;
+
+AVG(SALARY)
+-----------
+ 79390.6833
+
+SQL> SELECT id FROM (select id,count(*) count FROM takes WHERE takes.course_id like 'CS%' group by id) WHERE count>=2;
+
+ID
+-----
+00128
+12345
+45678
+54321
+76543
+98765
+
+6 rows selected.
+
+SQL> SELECT course_id FROM all_courses;
+
+COURSE_I
+--------
+PHY-101
+
+SQL> WITH temp AS (SELECT max(budget) AS temp FROM department) SELECT * FROM department,temp WHERE temp = department.budget;
+
+DEPT_NAME            BUILDING            BUDGET       TEMP
+-------------------- --------------- ---------- ----------
+Finance              Painter             120000     120000
+
+SQL>
